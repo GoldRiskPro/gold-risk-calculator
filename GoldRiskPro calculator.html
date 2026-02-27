@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Risk Pro </title>
+
+<style>
+:root{
+    --bg:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card:#1e293b;
+    --text:#e2e8f0;
+    --accent:#facc15;
+    --success:#22c55e;
+}
+.light{
+    --bg:#f1f5f9;
+    --card:#ffffff;
+    --text:#0f172a;
+    --accent:#d97706;
+    --success:#16a34a;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:20px;
+    transition:.3s;
+}
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+button{
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.toggle{
+    background:var(--accent);
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:var(--card);
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+.card h3{
+    margin-bottom:15px;
+    color:var(--accent);
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-bottom:12px;
+    border-radius:6px;
+    border:none;
+    font-size:15px;
+}
+
+.border{
+    border: 1px solid #aaa;
+}
+
+.result-box{
+    font-size:18px;
+    margin-top:10px;
+    cursor: pointer;
+}
+
+.big{
+    font-size:22px;
+    font-weight:bold;
+    color:var(--success);
+}
+.live{
+    font-size:14px;
+    opacity:0.8;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Gold Risk Pro</h2>
+<button class="toggle" onclick="toggleMode()">Toggle Mode</button>
+</header>
+
+<div class="dashboard">
+
+<div class="card">
+<h3>Account Settings</h3>
+<input type="number" id="account" class="border" placeholder="Account Size ($)">
+<input type="number" id="risk" class="border" placeholder="Risk %">
+</div>
+
+<div class="card">
+<h3>Trade Setup</h3>
+<input type="number" id="entry" class="border" placeholder="Entry Price">
+<input type="number" id="stop" class="border" placeholder="Stop Loss Price">
+<input type="number" id="target" class="border" placeholder="Take Profit Price">
+<div class="live">Live Gold Price: $<span id="livePrice">Loading...</span></div>
+</div>
+
+<div class="card">
+<h3>Results</h3>
+<div class="result-box">Risk Amount: $<span id="riskAmount">0</span></div>
+<div class="result-box">Stop Distance: <span id="stopDistance">0</span> pips</div>
+<div class="result-box">Ounces: <span id="ounces">0</span> oz</div>
+<div class="result-box">Risk-Reward Ratio: <span id="rr">0</span></div>
+<div class="result-box big">Position Size: <span id="lots">0</span> Lots</div>
+</div>
+
+</div>
+
+<script>
+
+const account = document.getElementById("account");
+const risk = document.getElementById("risk");
+const entry = document.getElementById("entry");
+const stop = document.getElementById("stop");
+const target = document.getElementById("target");
+
+const riskAmountEl = document.getElementById("riskAmount");
+const stopDistanceEl = document.getElementById("stopDistance");
+const lotsEl = document.getElementById("lots");
+const ouncesEl = document.getElementById("ounces");
+const rrEl = document.getElementById("rr");
+const livePriceEl = document.getElementById("livePrice");
+
+function calculate(){
+
+    let acc = parseFloat(account.value);
+    let r = parseFloat(risk.value);
+    let e = parseFloat(entry.value);
+    let s = parseFloat(stop.value);
+    let t = parseFloat(target.value);
+
+    if(!acc || !r || !e || !s) return;
+
+    let riskAmount = acc * (r/100);
+    let stopDistance = Math.abs(e - s);
+
+    let positionSize = riskAmount / (stopDistance * 100);
+    let ounces = positionSize * 100;
+
+    let rewardDistance = t ? Math.abs(t - e) : 0;
+    let rr = rewardDistance ? (rewardDistance / stopDistance).toFixed(2) : 0;
+
+    riskAmountEl.textContent = riskAmount.toFixed(2);
+    stopDistanceEl.textContent = stopDistance.toFixed(2);
+    lotsEl.textContent = positionSize.toFixed(2);
+    ouncesEl.textContent = ounces.toFixed(2);
+    rrEl.textContent = rr;
+}
+
+[account,risk,entry,stop,target].forEach(input=>{
+    input.addEventListener("input",calculate);
+});
+
+function toggleMode(){
+    document.body.classList.toggle("light");
+    localStorage.setItem("mode",
+        document.body.classList.contains("light")?"light":"dark"
+    );
+}
+
+if(localStorage.getItem("mode")==="light"){
+    document.body.classList.add("light");
+}
+
+// Live Gold Price API
+// async function fetchGold(){
+//     try{
+//         let res = await fetch("https://api.metals.live/v1/spot/gold");
+//         let data = await res.json();
+//         livePriceEl.textContent = data[0].price;
+//     }catch{
+//         livePriceEl.textContent = "Unavailable";
+//     }
+// }
+// fetchGold();
+// setInterval(fetchGold,60000);
+
+// Live Gold Price API
+// async function fetchGold(){
+//     try {
+//         let response = await fetch("https://api.exchangerate.host/latest?base=USD&symbols=XAU");
+//         let data = await response.json();
+
+//         // Rates example: {rates: {XAU: 0.0005}}
+//         if (data && data.rates && data.rates.XAU) {
+//             let xauRate = data.rates.XAU;
+//             let price = (1 / xauRate).toFixed(2);
+
+//             livePriceEl.textContent = price;
+//         } else {
+//             livePriceEl.textContent = "Unavailable";
+//         }
+//     } catch (e) {
+//         console.error(e);
+//         livePriceEl.textContent = "Unavailable";
+//     }
+// }
+
+// fetchGold();
+// setInterval(fetchGold, 60000);
+
+
+async function fetchGold() {
+    try {
+        let response = await fetch("https://www.goldapi.io/api/XAU/USD", {
+            headers: {
+                "x-access-token": "goldapi-demo-key"
+            }
+        });
+
+        let data = await response.json();
+
+        if (data && data.price) {
+            livePriceEl.textContent = data.price.toFixed(2);
+            currentLivePrice = data.price;
+        } else {
+            livePriceEl.textContent = "Unavailable";
+        }
+
+    } catch (error) {
+        console.error(error);
+        livePriceEl.textContent = "Unavailable";
+    }
+}
+
+let currentLivePrice = 0;
+
+fetchGold();
+setInterval(fetchGold, 60000);
+
+</script>
+
+</body>
+</html>
