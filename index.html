@@ -101,6 +101,13 @@ input{
     font-size:14px;
     opacity:0.8;
 }
+
+.coming-soon{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#121212;
+}
 </style>
 </head>
 
@@ -137,7 +144,8 @@ input{
 </div>
 
 </div>
-
+    
+<div class="coming-soon"><h2>More Features Coming SOON....</h2></div>    
 <script>
 
 const account = document.getElementById("account");
@@ -246,12 +254,12 @@ async function fetchGold() {
             livePriceEl.textContent = data.price.toFixed(2);
             currentLivePrice = data.price;
         } else {
-            livePriceEl.textContent = "Unavailable";
+            livePriceEl.textContent = "Coming Soon";
         }
 
     } catch (error) {
         console.error(error);
-        livePriceEl.textContent = "Unavailable";
+        livePriceEl.textContent = "Coming Soon";
     }
 }
 
@@ -264,3 +272,4 @@ setInterval(fetchGold, 60000);
 
 </body>
 </html>
+
