@@ -215,49 +215,11 @@ if(localStorage.getItem("mode")==="light"){
     document.body.classList.add("light");
 }
 
-// Live Gold Price API
-// async function fetchGold(){
-//     try{
-//         let res = await fetch("https://api.metals.live/v1/spot/gold");
-//         let data = await res.json();
-//         livePriceEl.textContent = data[0].price;
-//     }catch{
-//         livePriceEl.textContent = "Unavailable";
-//     }
-// }
-// fetchGold();
-// setInterval(fetchGold,60000);
-
-// Live Gold Price API
-// async function fetchGold(){
-//     try {
-//         let response = await fetch("https://api.exchangerate.host/latest?base=USD&symbols=XAU");
-//         let data = await response.json();
-
-//         // Rates example: {rates: {XAU: 0.0005}}
-//         if (data && data.rates && data.rates.XAU) {
-//             let xauRate = data.rates.XAU;
-//             let price = (1 / xauRate).toFixed(2);
-
-//             livePriceEl.textContent = price;
-//         } else {
-//             livePriceEl.textContent = "Unavailable";
-//         }
-//     } catch (e) {
-//         console.error(e);
-//         livePriceEl.textContent = "Unavailable";
-//     }
-// }
-
-// fetchGold();
-// setInterval(fetchGold, 60000);
-
-
 async function fetchGold() {
     try {
         let response = await fetch("https://www.goldapi.io/api/XAU/USD", {
             headers: {
-                "x-access-token": "goldapi-demo-key"
+                "x-access-token": "goldapi-5ho7n19mm9j5dam-io"
             }
         });
 
@@ -267,24 +229,25 @@ async function fetchGold() {
             livePriceEl.textContent = data.price.toFixed(2);
             currentLivePrice = data.price;
         } else {
-            livePriceEl.textContent = "Coming Soon";
+            livePriceEl.textContent = "Unavailable";
         }
 
     } catch (error) {
         console.error(error);
-        livePriceEl.textContent = "Coming Soon";
+        livePriceEl.textContent = "Unavailable";
     }
 }
 
 let currentLivePrice = 0;
 
 fetchGold();
-setInterval(fetchGold, 60000);
+// setInterval(fetchGold, 60000);
 
 </script>
 
 </body>
 </html>
+
 
 
 
