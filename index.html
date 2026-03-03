@@ -150,6 +150,10 @@ input{
     margin-top:10px;
 }
 
+.feedback{
+    text-wrap: wrap;
+}
+
 @media(max-width:542px){
     .coming-soon{
         margin-top:15px;
@@ -171,6 +175,12 @@ input{
     --text:#e2e8f0;
     --accent:#facc15;
     --success:#22c55e;
+	}
+	.feedback{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 10px 0;
 	}
 }
 </style>
@@ -228,7 +238,12 @@ input{
 
 </div>
 <div class="coming-soon"><h3>More Features Coming SOON....</h3></div> 
-<div class="feedback">Send Feedback(mailto:goldriskpro@gmail.com</div>
+<div class="feedback">  
+    <p>💬Help Improve Gold Risk Pro.</p> 
+    <p>Found a bug? Want a feature?</p>
+    <p>Send feedback👉 mailto: <a href="mailto:goldriskpro@gmail.com?subject=Gold Risk Pro Feedback&body=Hi, I have a suggestion for Gold Risk Pro:">
+    goldriskpro@gmail.com</a></p>
+</div> 
 <script>
 
 const account = document.getElementById("account");
@@ -415,6 +430,7 @@ fetchGold();
 
 </body>
 </html>
+
 
 
 
