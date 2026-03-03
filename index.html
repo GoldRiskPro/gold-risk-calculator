@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gold Risk Pro </title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Gold Risk Pro</title>
 
 <style>
 :root{
-    --bg:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg:linear-gradient(135deg, #1e2a38, #3b2f5c);
     --card:#1e293b;
     --text:#e2e8f0;
     --accent:#facc15;
@@ -33,7 +33,6 @@ body{
     color:var(--text);
     min-height:100vh;
     padding:20px;
-    margin:0;
     transition:.3s;
 }
 
@@ -87,6 +86,41 @@ input{
     border: 1px solid #aaa;
 }
 
+.hidden{
+	display: none;
+}
+
+.btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.risk-swap-btn{
+    width: 140px;
+    height: 40px;
+    padding: 0;
+    background: ash;
+    margin: 0 10px;
+    font-weight: 500;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2); 
+}
+
+.risk-swap-btn:hover{
+    background: #5A5A5A ;
+    color: #fff;
+}
+
+.cal-btn{
+    background: #D4AF37;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.cal-btn:hover{
+    background: #FFD700;
+    transform: translateY(-2px);
+}
+
 .result-box{
     font-size:18px;
     margin-top:10px;
@@ -98,16 +132,21 @@ input{
     font-weight:bold;
     color:var(--success);
 }
+
 .live{
     font-size:14px;
     opacity:0.8;
+}
+
+.error {
+    border: 2px solid red !important;
 }
 
 .coming-soon{
     display:flex;
     justify-content:center;
     align-items:center;
-    color:#121212;
+    color: var(--text);
     margin-top:10px;
 }
 
@@ -133,36 +172,54 @@ input{
 
 <div class="dashboard">
 
-<div class="card">
-<h3>Account Settings</h3>
-<input type="number" id="account" class="border" placeholder="Account Size ($)">
-<input type="number" id="risk" class="border" placeholder="Risk %">
-</div>
+    <div class="card">
+        <h3>Account Settings</h3>
+        <input type="number" id="account" class="border" placeholder="Enter account size ($)" required>
+            <input type="number" id="risk" class="border" placeholder="Enter risk %" required>
+                <input type="number" id="risk$" class="border hidden" placeholder="Enter dollar amount" required>
 
-<div class="card">
-<h3>Trade Setup</h3>
-<input type="number" id="entry" class="border" placeholder="Entry Price">
-<input type="number" id="stop" class="border" placeholder="Stop Loss Price">
-<input type="number" id="target" class="border" placeholder="Take Profit Price">
-<div class="live">Live Gold Price: $<span id="livePrice">Loading...</span></div>
-</div>
+        <div class="btn-container">
+            <button class="risk-swap-btn" id="swap-btn" onclick="riskswapbtn()">
+                Swap risk % with Money
+            </button>
+            <button class="risk-swap-btn" id="swap-btn2" onclick="riskswapbtn2()">
+                Swap money with Risk %
+            </button>
+        </div>
+    </div>
 
-<div class="card">
-<h3>Results</h3>
-<div class="result-box">Risk Amount: $<span id="riskAmount">0</span></div>
-<div class="result-box">Stop Distance: <span id="stopDistance">0</span> pips</div>
-<div class="result-box">Ounces: <span id="ounces">0</span> oz</div>
-<div class="result-box">Risk-Reward Ratio: <span id="rr">0</span></div>
-<div class="result-box big">Position Size: <span id="lots">0</span> Lots</div>
-</div>
+    <div class="card">
+        <h3>Trade Setup</h3>
+            <input type="number" id="entry" class="border" placeholder="Enter entry price">
+                <input type="number" id="stop" class="border" placeholder="Enter stop loss price">
+                    <input type="number" id="target" class="border" placeholder="Enter take profit price">
+        <div class="live">Live Gold Price: $<span id="livePrice">Loading...</span>
+            <br>
+            <span>Please refresh page for updated Gold price</span>
+        </div>
+        <br>
+        <div class="calculate-buttons">
+            <button class="reset-btn" onclick="resetCalculator()">Reset</button>
+            <button class="cal-btn" onclick="calculate()">Calculate</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Results</h3>
+        <div class="result-box">Risk Amount: $<span id="riskAmount">0</span></div>
+        <div class="result-box">Stop Distance: <span id="stopDistance">0</span> pips</div>
+        <div class="result-box">Ounces: <span id="ounces">0</span> oz</div>
+        <div class="result-box">Risk-Reward Ratio: <span id="rr">0</span></div>
+        <div class="result-box big">Position Size: <span id="lots">0</span> Lots</div>
+    </div>
 
 </div>
-    
-<div class="coming-soon"><h2>More Features Coming SOON....</h2></div>    
+<div class="coming-soon"><h3>More Features Coming SOON....</h3></div>    
 <script>
 
 const account = document.getElementById("account");
 const risk = document.getElementById("risk");
+const risk$ = document.getElementById("risk$");
 const entry = document.getElementById("entry");
 const stop = document.getElementById("stop");
 const target = document.getElementById("target");
@@ -178,14 +235,64 @@ function calculate(){
 
     let acc = parseFloat(account.value);
     let r = parseFloat(risk.value);
+    let rDollar = parseFloat(risk$.value);
     let e = parseFloat(entry.value);
     let s = parseFloat(stop.value);
     let t = parseFloat(target.value);
 
-    if(!acc || !r || !e || !s) return;
+    // Remove previous error highlights
+[account, risk, risk$, entry, stop].forEach(input=>{
+    input.classList.remove("error");
+});
 
-    let riskAmount = acc * (r/100);
+let hasError = false;
+
+    // Required fields
+    if(!acc){
+        account.classList.add("error");
+        hasError = true;
+    }
+
+    if(!e){
+        entry.classList.add("error");
+        hasError = true;
+    }
+
+    if(!s){
+        stop.classList.add("error");
+        hasError = true;
+    }
+
+    // Check correct risk input based on mode
+    if(!risk.classList.contains("hidden")){
+        if(!r){
+            risk.classList.add("error");
+            hasError = true;
+        }
+    } else {
+        if(!rDollar){
+            risk$.classList.add("error");
+            hasError = true;
+        }
+    }
+
+    if(hasError) return;
+
     let stopDistance = Math.abs(e - s);
+    if(stopDistance === 0) return;
+
+    let riskAmount;
+
+    // If Risk % input is visible
+    if(!risk.classList.contains("hidden")){
+        if(!r) return;
+        riskAmount = acc * (r/100);
+    } 
+    // If Risk $ input is visible
+    else{
+        if(!rDollar) return;
+        riskAmount = rDollar;
+    }
 
     let positionSize = riskAmount / (stopDistance * 100);
     let ounces = positionSize * 100;
@@ -198,11 +305,57 @@ function calculate(){
     lotsEl.textContent = positionSize.toFixed(2);
     ouncesEl.textContent = ounces.toFixed(2);
     rrEl.textContent = rr;
+
+    if (r > acc || rDollar > acc) {
+        alert("Your risk has exceeded your account size! \nPlease enter a valid risk amount or %");
+    }
 }
 
-[account,risk,entry,stop,target].forEach(input=>{
-    input.addEventListener("input",calculate);
-});
+// [account,risk,entry,stop,target].forEach(input=>{
+//     input.addEventListener("input",calculate);
+// });
+
+function riskswapbtn(){
+	document.getElementById("risk").classList.add("hidden");
+	document.getElementById("risk$").classList.remove("hidden");
+
+    // risk$ = calculate();
+}
+
+function riskswapbtn2(){
+    document.getElementById("risk$").classList.add("hidden");
+    document.getElementById("risk").classList.remove("hidden");
+
+    // risk = calculate();
+}
+
+function resetCalculator(){
+
+    // Clear all inputs
+    account.value = "";
+    risk.value = "";
+    risk$.value = "";
+    entry.value = "";
+    stop.value = "";
+    target.value = "";
+
+    // Switch back to Risk %
+    document.getElementById("risk$").classList.add("hidden");
+    document.getElementById("risk").classList.remove("hidden");
+
+    // Remove error styling if present
+    [account, risk, risk$, entry, stop, target].forEach(input => {
+        input.classList.remove("error");
+    });
+
+    // Reset result display
+    riskAmountEl.textContent = "0";
+    stopDistanceEl.textContent = "0";
+    lotsEl.textContent = "0";
+    ouncesEl.textContent = "0";
+    rrEl.textContent = "0";
+}
+
 
 function toggleMode(){
     document.body.classList.toggle("light");
@@ -213,7 +366,8 @@ function toggleMode(){
 
 if(localStorage.getItem("mode")==="light"){
     document.body.classList.add("light");
-}
+} 
+
 
 async function fetchGold() {
     try {
@@ -229,12 +383,12 @@ async function fetchGold() {
             livePriceEl.textContent = data.price.toFixed(2);
             currentLivePrice = data.price;
         } else {
-            livePriceEl.textContent = "Unavailable";
+            livePriceEl.textContent = "Coming soon";
         }
 
     } catch (error) {
         console.error(error);
-        livePriceEl.textContent = "Unavailable";
+        livePriceEl.textContent = "Coming soon";
     }
 }
 
@@ -247,7 +401,6 @@ fetchGold();
 
 </body>
 </html>
-
 
 
 
