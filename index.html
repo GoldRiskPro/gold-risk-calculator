@@ -102,7 +102,7 @@ input{
     padding: 0;
     background: ash;
     margin: 0 10px;
-    font-weight: 500;
+    font-weight: 700;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2); 
 }
 
@@ -161,7 +161,6 @@ input{
     }
 	.risk-swap-btn{
 		color: #121212;
-		background: ;
 	}
 	.reset-btn, .cal-btn, .toggle{
 		color: #121212;
@@ -194,10 +193,10 @@ input{
 
         <div class="btn-container">
             <button class="risk-swap-btn" id="swap-btn" onclick="riskswapbtn()">
-                Swap risk % with Money
+                Swap with Money
             </button>
             <button class="risk-swap-btn" id="swap-btn2" onclick="riskswapbtn2()">
-                Swap money with Risk %
+                Swap with Risk
             </button>
         </div>
     </div>
@@ -209,7 +208,7 @@ input{
                     <input type="number" id="target" class="border" placeholder="Enter take profit price">
         <div class="live">Live Gold Price: $<span id="livePrice">Loading...</span>
             <br>
-            <span>Please refresh page for updated Gold price</span>
+            <!-- <span>Please refresh page for updated Gold price</span> -->
         </div>
         <br>
         <div class="calculate-buttons">
@@ -415,6 +414,7 @@ fetchGold();
 
 </body>
 </html>
+
 
 
 
