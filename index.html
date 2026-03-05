@@ -362,6 +362,11 @@ function riskswapbtn(){
 	document.getElementById("risk$").classList.remove("hidden");
 
     // risk$ = calculate();
+
+	gtag('event', 'risk_mode_switch', {
+	event_category: 'engagement',
+	event_label: 'Risk % to Risk Amount'
+	});
 }
 
 function riskswapbtn2(){
@@ -369,6 +374,11 @@ function riskswapbtn2(){
     document.getElementById("risk").classList.remove("hidden");
 
     // risk = calculate();
+
+	gtag('event', 'risk_mode_switch', {
+	event_category: 'engagement',
+	event_label: 'Risk Amount to Risk %'
+	});
 }
 
 function resetCalculator(){
@@ -392,6 +402,10 @@ function resetCalculator(){
     lotsEl.textContent = "0";
     ouncesEl.textContent = "0";
     rrEl.textContent = "0";
+
+	gtag('event', 'reset_clicked', {
+	event_category: 'engagement'
+	});
 }
 
 
@@ -439,6 +453,7 @@ fetchGold();
 
 </body>
 </html>
+
 
 
 
