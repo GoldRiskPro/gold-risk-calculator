@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SWENX25V1P"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SWENX25V1P');
+</script>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Gold Risk Pro</title>
@@ -274,14 +282,12 @@ function calculate(){
     let s = parseFloat(stop.value);
     let t = parseFloat(target.value);
 
-    // Remove previous error highlights
 [account, risk, risk$, entry, stop].forEach(input=>{
     input.classList.remove("error");
 });
 
 let hasError = false;
 
-    // Required fields
     if(!acc){
         account.classList.add("error");
         hasError = true;
@@ -297,7 +303,6 @@ let hasError = false;
         hasError = true;
     }
 
-    // Check correct risk input based on mode
     if(!risk.classList.contains("hidden")){
         if(!r){
             risk.classList.add("error");
@@ -317,12 +322,10 @@ let hasError = false;
 
     let riskAmount;
 
-    // If Risk % input is visible
     if(!risk.classList.contains("hidden")){
         if(!r) return;
         riskAmount = acc * (r/100);
     } 
-    // If Risk $ input is visible
     else{
         if(!rDollar) return;
         riskAmount = rDollar;
@@ -343,6 +346,11 @@ let hasError = false;
     if (r > acc || rDollar > acc) {
         alert("Your risk has exceeded your account size! \nPlease enter a valid risk amount or %");
     }
+	
+	gtag('event', 'calculate_clicked', {
+ 	event_category: 'engagement',
+  	event_label: 'Gold Position Calculation'
+});
 }
 
 // [account,risk,entry,stop,target].forEach(input=>{
@@ -365,7 +373,6 @@ function riskswapbtn2(){
 
 function resetCalculator(){
 
-    // Clear all inputs
     account.value = "";
     risk.value = "";
     risk$.value = "";
@@ -373,16 +380,13 @@ function resetCalculator(){
     stop.value = "";
     target.value = "";
 
-    // Switch back to Risk %
     document.getElementById("risk$").classList.add("hidden");
     document.getElementById("risk").classList.remove("hidden");
 
-    // Remove error styling if present
     [account, risk, risk$, entry, stop, target].forEach(input => {
         input.classList.remove("error");
     });
 
-    // Reset result display
     riskAmountEl.textContent = "0";
     stopDistanceEl.textContent = "0";
     lotsEl.textContent = "0";
@@ -435,6 +439,7 @@ fetchGold();
 
 </body>
 </html>
+
 
 
 
